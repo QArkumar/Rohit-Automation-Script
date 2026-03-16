@@ -1,1 +1,21 @@
+import allure
+from playwright.sync_api import sync_playwright
 
+@allure.title("Verify user login and dashboard access")
+@allure.description("Test login functionality for AFM portal")
+def test_login():
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=False)
+        context = browser.new_context()
+        page = context.new_page()
+
+        page.goto("https://afm2020.com/")
+        page.fill("#txtCorporateId", "AFMDEMO")
+        page.fill("#txtUserName", "toshika")
+        page.fill("#txtPassword", "Avaal@555")
+
+        page.click("button:has-text('Sign In')")
+        page.wait_for_load_state("networkidle")
+
+        context.storage_state(path="auth.json")
+        browser.close()
